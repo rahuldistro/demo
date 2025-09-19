@@ -1,30 +1,35 @@
-// components/ElementorWrapper.tsx
 "use client";
 
 import { useEffect } from "react";
 
 export default function ElementorWrapper({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    // Load Elementor JS dynamically after render
+    // 1️⃣ Load Elementor JS
     const scripts = [
       "https://mydemopage.wpenginepowered.com/wp-content/plugins/elementor/assets/js/frontend.min.js",
-      "https://mydemopage.wpenginepowered.com/wp-content/plugins/elementor/assets/lib/swiper/swiper.min.js", // swiper if sliders used
+      "https://mydemopage.wpenginepowered.com/wp-content/plugins/elementor/assets/lib/swiper/swiper.min.js", // for sliders
     ];
 
     scripts.forEach((src) => {
-      const script = document.createElement("script");
-      script.src = src;
-      script.async = true;
-      document.body.appendChild(script);
+      if (!document.querySelector(`script[src="${src}"]`)) {
+        const script = document.createElement("script");
+        script.src = src;
+        script.async = true;
+        document.body.appendChild(script);
+      }
     });
 
-    return () => {
-      // Cleanup scripts if needed
-      scripts.forEach((src) => {
-        const s = document.querySelector(`script[src="${src}"]`);
-        if (s) s.remove();
-      });
+    // 2️⃣ Initialize Elementor widgets after scripts load
+    const initElementor = () => {
+      if (window?.elementorFrontend?.init) {
+        window.elementorFrontend.init();
+      }
     };
+
+    // Delay init to make sure DOM is rendered
+    const timeout = setTimeout(initElementor, 500);
+
+    return () => clearTimeout(timeout);
   }, []);
 
   return (
