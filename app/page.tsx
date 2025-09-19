@@ -28,6 +28,7 @@ export default async function Home() {
             }
           `,
         }),
+        cache: "no-store", // ✅ ye line important hai
       }
     );
 
@@ -42,9 +43,7 @@ export default async function Home() {
       {pages.map((page) => (
         <div key={page.id}>
           <h2 style={{ display: "none" }}>{page.title}</h2> {/* SEO ke liye */}
-          <div
-            dangerouslySetInnerHTML={{ __html: page.content }}
-          />
+          <div dangerouslySetInnerHTML={{ __html: page.content }} />
         </div>
       ))}
     </div>
