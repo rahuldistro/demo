@@ -6,7 +6,7 @@ export default function ElementorWrapper({ children }: { children: React.ReactNo
   useEffect(() => {
     // 1️⃣ Load Elementor JS
     const scripts = [
-      "https://mydemopage.wpenginepowered.com/wp-content/plugins/elementor/assets/lib/swiper/swiper.min.js", // for sliders
+      "https://mydemopage.wpenginepowered.com/wp-content/plugins/elementor/assets/lib/swiper/swiper.min.js",
       "https://mydemopage.wpenginepowered.com/wp-content/plugins/elementor/assets/js/frontend.min.js",
     ];
 
@@ -21,9 +21,8 @@ export default function ElementorWrapper({ children }: { children: React.ReactNo
 
     // 2️⃣ Initialize Elementor widgets after scripts load
     const initElementor = () => {
-      // ✅ Use 'as any' to bypass TS type check
-      if ((window as any).elementorFrontend?.init) {
-        (window as any).elementorFrontend.init();
+      if (window.elementorFrontend?.init) {
+        window.elementorFrontend.init();
       }
     };
 
