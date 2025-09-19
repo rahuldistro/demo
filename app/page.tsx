@@ -40,10 +40,12 @@ export default async function Home() {
   return (
     <div>
       {pages.map((page) => (
-        <div
-          key={page.id}
-          dangerouslySetInnerHTML={{ __html: page.content }}
-        />
+        <div key={page.id}>
+          <h2 style={{ display: "none" }}>{page.title}</h2> {/* SEO ke liye */}
+          <div
+            dangerouslySetInnerHTML={{ __html: page.content }}
+          />
+        </div>
       ))}
     </div>
   );
