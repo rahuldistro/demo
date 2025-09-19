@@ -38,19 +38,13 @@ export default async function Home() {
   }
 
   return (
-    <div className="container mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-6">WordPress Pages</h1>
-      <ul className="list-disc pl-5 space-y-2">
-        {pages.map((page) => (
-          <li key={page.id}>
-            <h2 className="text-xl font-semibold">{page.title}</h2>
-            <div
-              className="prose"
-              dangerouslySetInnerHTML={{ __html: page.content }}
-            />
-          </li>
-        ))}
-      </ul>
+    <div>
+      {pages.map((page) => (
+        <div
+          key={page.id}
+          dangerouslySetInnerHTML={{ __html: page.content }}
+        />
+      ))}
     </div>
   );
 }
