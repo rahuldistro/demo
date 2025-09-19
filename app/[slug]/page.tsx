@@ -35,7 +35,8 @@ export default async function Page({ params }: { params: { slug: string } }) {
       }
     }
   } catch (err) {
-    error = `Error fetching page: ${err.message}`;
+    // Type-check the error
+    error = err instanceof Error ? `Error fetching page: ${err.message}` : `Error fetching page: Unknown error`;
     console.error(error, err);
   }
 
