@@ -5,27 +5,19 @@ import Head from "next/head";
 import Script from "next/script";
 
 interface WordPressPage {
-  id: number;
+  id: string;
   slug: string;
   title: string;
-}
-
-interface ElementorPage {
-  id: number;
-  title: string;
   content: string;
-  css?: string[];
-  js?: string[];
 }
 
 export default function Home() {
-  const [pages, setPages] = useState<ElementorPage[]>([]);
+  const [pages, setPages] = useState<WordPressPage[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPages = async () => {
       try {
-        // 1️⃣ Fetch page list from GraphQL
         const res = await fetch(
           "https://mydemopage.wpenginepowered.com/graphql",
           {
@@ -39,6 +31,7 @@ export default function Home() {
                       id
                       slug
                       title
+                      content
                     }
                   }
                 }
@@ -49,26 +42,7 @@ export default function Home() {
         );
 
         const json = await res.json();
-        const pageList: WordPressPage[] = json.data.pages.nodes;
-
-        // 2️⃣ Fetch Elementor JSON content for each page
-        const pageData: ElementorPage[] = await Promise.all(
-          pageList.map(async (page) => {
-            const elRes = await fetch(
-              `https://mydemopage.wpenginepowered.com/wp-json/elementor/v1/pages/${page.id}`
-            );
-            const elJson = await elRes.json();
-            return {
-              id: page.id,
-              title: page.title,
-              content: elJson.content,
-              css: elJson.css || [],
-              js: elJson.js || [],
-            };
-          })
-        );
-
-        setPages(pageData);
+        setPages(json.data.pages.nodes);
       } catch (err) {
         console.error("Error fetching pages:", err);
       } finally {
@@ -81,28 +55,36 @@ export default function Home() {
 
   if (loading) return <p>Loading pages...</p>;
 
+  // Elementor frontend CSS/JS + theme CSS
+  const elementorCss = [
+    "https://mydemopage.wpenginepowered.com/wp-content/plugins/elementor/assets/css/frontend.min.css",
+    "https://mydemopage.wpenginepowered.com/wp-content/plugins/elementor/assets/lib/eicons/css/elementor-icons.min.css",
+    "https://mydemopage.wpenginepowered.com/wp-content/themes/your-theme/style.css", // Replace with your theme CSS
+  ];
+
+  const elementorJs = [
+    "https://mydemopage.wpenginepowered.com/wp-content/plugins/elementor/assets/js/frontend.min.js",
+  ];
+
   return (
     <>
-      {pages.map((page) => (
-        <div key={page.id} className="elementor-page">
-          {/* Dynamically inject CSS */}
-          <Head>
-            {page.css?.map((href, i) => (
-              <link key={i} rel="stylesheet" href={href} />
-            ))}
-          </Head>
+      <Head>
+        {elementorCss.map((href, i) => (
+          <link key={i} rel="stylesheet" href={href} />
+        ))}
+      </Head>
 
-          {/* Hidden title for SEO */}
-          <h2 style={{ display: "none" }}>{page.title}</h2>
+      <div>
+        {pages.map((page) => (
+          <div key={page.id} className="elementor-page">
+            <h2 style={{ display: "none" }}>{page.title}</h2> {/* SEO */}
+            <div dangerouslySetInnerHTML={{ __html: page.content }} />
+          </div>
+        ))}
+      </div>
 
-          {/* Elementor content */}
-          <div dangerouslySetInnerHTML={{ __html: page.content }} />
-
-          {/* Dynamically inject JS */}
-          {page.js?.map((src, i) => (
-            <Script key={i} src={src} strategy="afterInteractive" />
-          ))}
-        </div>
+      {elementorJs.map((src, i) => (
+        <Script key={i} src={src} strategy="afterInteractive" />
       ))}
     </>
   );
