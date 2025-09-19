@@ -41,9 +41,14 @@ export default async function Home() {
         console.error(error, data);
       }
     }
-  } catch (err: any) {
-    error = `Error fetching pages: ${err.message}`;
-    console.error(error, err);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      error = `Error fetching pages: ${err.message}`;
+      console.error(error, err);
+    } else {
+      error = "Unknown error occurred";
+      console.error(error);
+    }
   }
 
   return (

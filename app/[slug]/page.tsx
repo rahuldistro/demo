@@ -12,7 +12,7 @@ interface PageProps {
   params: { slug: string };
 }
 
-// (Optional) Dynamic metadata for SEO
+// (Optional SEO metadata)
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = params;
   return {
@@ -46,17 +46,23 @@ export default async function Page({ params }: PageProps) {
       error = `Failed to fetch page: ${res.status} ${res.statusText}`;
       console.error(error);
     } else {
-      const data: WordPressPage[] = await res.json();
-      page = data.length > 0 ? data[0] : null;
+      const data: unknown = await res.json();
 
-      if (!page) {
+      if (Array.isArray(data) && data.length > 0) {
+        page = data[0] as WordPressPage;
+      } else {
         error = `Page with slug "${slug}" not found`;
         console.error(error);
       }
     }
-  } catch (err: any) {
-    error = `Error fetching page: ${err.message}`;
-    console.error(error, err);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      error = `Error fetching page: ${err.message}`;
+      console.error(error, err);
+    } else {
+      error = "Unknown error occurred";
+      console.error(error);
+    }
   }
 
   if (error || !page) {
