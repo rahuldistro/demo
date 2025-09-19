@@ -1,47 +1,56 @@
-// app/post/[slug]/page.tsx
+// app/[slug]/page.tsx
 import Image from "next/image";
 
-interface WordPressPost {
+interface WordPressPage {
   id: number;
   slug: string;
-  title: {
-    rendered: string;
-  };
-  content: {
-    rendered: string;
-  };
+  title: { rendered: string };
+  content: { rendered: string };
 }
 
-export default async function Post({ params }: { params: { slug: string } }) {
+export default async function Page({ params }: { params: { slug: string } }) {
   const { slug } = params;
+  let page: WordPressPage | null = null;
+  let error: string | null = null;
 
-  // Fetch a single post by slug
-  const res = await fetch(`https://mydemopage.wpenginepowered.com/wp-json/wp/v2/posts?slug=${slug}`, {
-    cache: "no-store",
-  });
+  try {
+    const res = await fetch(`${process.env.WP_API_URL || "https://mydemopage.wpenginepowered.com/wp-json/wp/v2"}/pages?slug=${slug}`, {
+      cache: "no-store",
+      headers: process.env.WP_API_USERNAME && process.env.WP_API_PASSWORD
+        ? {
+            Authorization: `Basic ${Buffer.from(`${process.env.WP_API_USERNAME}:${process.env.WP_API_PASSWORD}`).toString("base64")}`,
+          }
+        : {},
+    });
 
-  if (!res.ok) {
-    return (
-      <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-        <p>Error fetching post. Please check the WordPress API.</p>
-      </div>
-    );
+    if (!res.ok) {
+      error = `Failed to fetch page: ${res.status} ${res.statusText}`;
+      console.error(error);
+    } else {
+      const data = await res.json();
+      page = data[0] || null;
+      if (!page) {
+        error = `Page with slug "${slug}" not found`;
+        console.error(error);
+      }
+    }
+  } catch (err) {
+    error = `Error fetching page: ${err.message}`;
+    console.error(error, err);
   }
 
-  const post: WordPressPost = (await res.json())[0];
-
-  if (!post) {
+  if (error || !page) {
     return (
       <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-        <p>Post not found.</p>
+        <p>{error || "Page not found."}</p>
       </div>
     );
   }
 
   return (
     <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <h1>{post.title.rendered}</h1>
-      <div dangerouslySetInnerHTML={{ __html: post.content.rendered }} />
+      <h1>{page.title.rendered}</h1>
+      <div dangerouslySetInnerHTML={{ __html: page.content.rendered }} />
     </div>
   );
 }
