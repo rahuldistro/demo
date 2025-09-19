@@ -15,26 +15,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
-
-        {/* Elementor + Theme CSS */}
-        <link
-          rel="stylesheet"
-          href="https://mydemopage.wpenginepowered.com/wp-content/themes/hello-elementor/assets/css/reset.css"
-        />
-        <link
-          rel="stylesheet"
-          href="https://mydemopage.wpenginepowered.com/wp-content/themes/hello-elementor/assets/css/theme.css"
-        />
-        <link
-          rel="stylesheet"
-          href="https://mydemopage.wpenginepowered.com/wp-content/plugins/elementor/assets/css/frontend.min.css"
-        />
-
-        {/* Elementor JS */}
-        <Script
-          src="https://mydemopage.wpenginepowered.com/wp-content/plugins/elementor/assets/js/frontend.min.js"
-          strategy="afterInteractive"
-        />
       </body>
     </html>
   );
