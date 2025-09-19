@@ -1,83 +1,56 @@
-// app/page.tsx
-import Link from "next/link";
-
 interface WordPressPage {
-  id: number;
+  id: string;
   slug: string;
-  title: { rendered: string };
-  content: { rendered: string };
+  title: string;
+  content: string;
 }
 
 export default async function Home() {
   let pages: WordPressPage[] = [];
-  let error: string | null = null;
 
   try {
-    const res = await fetch(`${process.env.WP_API_URL}/pages`, {
-      cache: "no-store",
-      headers:
-        process.env.WP_API_USERNAME && process.env.WP_API_PASSWORD
-          ? {
-              Authorization: `Basic ${Buffer.from(
-                `${process.env.WP_API_USERNAME}:${process.env.WP_API_PASSWORD}`
-              ).toString("base64")}`,
+    const res = await fetch(
+      "https://mydemopage.wpenginepowered.com/graphql",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          query: `
+            query GetPages {
+              pages {
+                nodes {
+                  id
+                  slug
+                  title
+                  content
+                }
+              }
             }
-          : {},
-    });
-
-    if (!res.ok) {
-      error = `Failed to fetch pages: ${res.status} ${res.statusText}`;
-      console.error(error);
-    } else {
-      const rawText = await res.text(); // ✅ raw text first
-      console.log("🔍 Raw API Response:", rawText.slice(0, 200)); // first 200 chars
-
-      try {
-        const data: unknown = JSON.parse(rawText);
-
-        if (Array.isArray(data)) {
-          pages = data as WordPressPage[];
-        } else {
-          error = "Invalid API response: Expected an array of pages";
-          console.error(error, data);
-        }
-      } catch (jsonErr) {
-        error = "Response is not valid JSON (maybe HTML returned)";
-        console.error(error, rawText);
+          `,
+        }),
       }
-    }
-  } catch (err: unknown) {
-    if (err instanceof Error) {
-      error = `Error fetching pages: ${err.message}`;
-      console.error(error, err);
-    } else {
-      error = "Unknown error occurred";
-      console.error(error);
-    }
+    );
+
+    const json = await res.json();
+    pages = json.data.pages.nodes;
+  } catch (err) {
+    console.error("Error fetching pages:", err);
   }
 
   return (
-    <div className="font-sans container mx-auto min-h-screen p-8">
+    <div className="container mx-auto p-8">
       <h1 className="text-3xl font-bold mb-6">WordPress Pages</h1>
-
-      {error ? (
-        <p className="text-red-600">{error}</p>
-      ) : pages.length > 0 ? (
-        <ul className="list-disc pl-5 space-y-2">
-          {pages.map((page) => (
-            <li key={page.id}>
-              <Link
-                href={`/${page.slug}`}
-                className="text-blue-600 hover:underline"
-              >
-                {page.title.rendered}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>No pages found. Check WordPress API or deployment.</p>
-      )}
+      <ul className="list-disc pl-5 space-y-2">
+        {pages.map((page) => (
+          <li key={page.id}>
+            <h2 className="text-xl font-semibold">{page.title}</h2>
+            <div
+              className="prose"
+              dangerouslySetInnerHTML={{ __html: page.content }}
+            />
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
