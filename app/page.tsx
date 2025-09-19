@@ -13,32 +13,37 @@ export default async function Home() {
   let error: string | null = null;
 
   try {
-    const res = await fetch(
-      `${process.env.WP_API_URL || "https://mydemopage.wpenginepowered.com/wp-json/wp/v2"}/pages`,
-      {
-        cache: "no-store",
-        headers:
-          process.env.WP_API_USERNAME && process.env.WP_API_PASSWORD
-            ? {
-                Authorization: `Basic ${Buffer.from(
-                  `${process.env.WP_API_USERNAME}:${process.env.WP_API_PASSWORD}`
-                ).toString("base64")}`,
-              }
-            : {},
-      }
-    );
+    const res = await fetch(`${process.env.WP_API_URL}/pages`, {
+      cache: "no-store",
+      headers:
+        process.env.WP_API_USERNAME && process.env.WP_API_PASSWORD
+          ? {
+              Authorization: `Basic ${Buffer.from(
+                `${process.env.WP_API_USERNAME}:${process.env.WP_API_PASSWORD}`
+              ).toString("base64")}`,
+            }
+          : {},
+    });
 
     if (!res.ok) {
       error = `Failed to fetch pages: ${res.status} ${res.statusText}`;
       console.error(error);
     } else {
-      const data: unknown = await res.json();
+      const rawText = await res.text(); // ✅ raw text first
+      console.log("🔍 Raw API Response:", rawText.slice(0, 200)); // first 200 chars
 
-      if (Array.isArray(data)) {
-        pages = data as WordPressPage[];
-      } else {
-        error = "Invalid API response: Expected an array of pages";
-        console.error(error, data);
+      try {
+        const data: unknown = JSON.parse(rawText);
+
+        if (Array.isArray(data)) {
+          pages = data as WordPressPage[];
+        } else {
+          error = "Invalid API response: Expected an array of pages";
+          console.error(error, data);
+        }
+      } catch (jsonErr) {
+        error = "Response is not valid JSON (maybe HTML returned)";
+        console.error(error, rawText);
       }
     }
   } catch (err: unknown) {
