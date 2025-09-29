@@ -26,6 +26,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
           variables: { slug: params.slug },
         }),
         cache: 'force-cache',
+        next: { revalidate: 3600 },
       }
     );
 
@@ -43,7 +44,14 @@ export default async function Page({ params }: { params: { slug: string } }) {
   if (!page) {
     return (
       <ElementorWrapper>
-        <div>Page not found</div>
+        <div className="error">Page not found</div>
+        <style jsx>{`
+          .error {
+            text-align: center;
+            padding: 20px;
+            color: red;
+          }
+        `}</style>
       </ElementorWrapper>
     );
   }
@@ -55,7 +63,22 @@ export default async function Page({ params }: { params: { slug: string } }) {
         className="elementor"
         dangerouslySetInnerHTML={{
           __html: sanitizeHtml(page.content || 'No content available', {
-            allowedTags: ['div', 'p', 'h1', 'h2', 'h3', 'a', 'img', 'ul', 'li', 'span', 'button'],
+            allowedTags: [
+              'div',
+              'p',
+              'h1',
+              'h2',
+              'h3',
+              'h4',
+              'h5',
+              'h6',
+              'a',
+              'img',
+              'ul',
+              'li',
+              'span',
+              'button',
+            ],
             allowedAttributes: {
               '*': ['class', 'style'],
               a: ['href', 'target'],
@@ -70,79 +93,34 @@ export default async function Page({ params }: { params: { slug: string } }) {
 }
 
 export async function generateStaticParams() {
-  const res = await fetch('https://mydemopage.wpenginepowered.com/graphql', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      query: `
-        query GetPages {
-          pages {
-            nodes {
-              slug
+  try {
+    const res = await fetch('https://mydemopage.wpenginepowered.com/graphql', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        query: `
+          query GetPages {
+            pages {
+              nodes {
+                slug
+              }
             }
           }
-        }
-      `,
-    }),
-  });
+        `,
+      }),
+    });
 
-  const json = await res.json();
-  const pages = json.data?.pages?.nodes || [];
-  return pages.map((page: WordPressPage) => ({
-    slug: page.slug,
-  }));
+    if (!res.ok) {
+      throw new Error('Failed to fetch pages for static params');
+    }
+
+    const json = await res.json();
+    const pages = json.data?.pages?.nodes || [];
+    return pages.map((page: WordPressPage) => ({
+      slug: page.slug,
+    }));
+  } catch (err) {
+    console.error('Error generating static params:', err);
+    return [];
+  }
 }
-
-
-// interface WordPressPage {
-//   id: string;
-//   slug: string;
-//   title: string;
-//   content: string;
-// }
-
-// interface Params {
-//   params: { slug: string };
-// }
-
-// export default async function WordPressPageBySlug({ params }: Params) {
-//   const { slug } = params;
-//   let page: WordPressPage | null = null;
-
-//   try {
-//     const res = await fetch(
-//       "https://mydemopage.wpenginepowered.com/graphql",
-//       {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({
-//           query: `
-//             query GetPageBySlug($slug: ID!) {
-//               page(id: $slug, idType: SLUG) {
-//                 id
-//                 slug
-//                 title
-//                 content
-//               }
-//             }
-//           `,
-//           variables: { slug },
-//         }),
-//       }
-//     );
-
-//     const json = await res.json();
-//     page = json.data.page;
-//   } catch (err) {
-//     console.error("Error fetching page:", err);
-//   }
-
-//   if (!page) return <p>Page not found</p>;
-
-//   return (
-//     <div>
-//       <h1 style={{ display: "none" }}>{page.title}</h1> {/* SEO ke liye */}
-//       <div dangerouslySetInnerHTML={{ __html: page.content }} />
-//     </div>
-//   );
-// }

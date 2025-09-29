@@ -19,15 +19,17 @@ export default function NavBar({ pages }: NavBarProps) {
       </ul>
       <style jsx>{`
         .page-navigation {
-          background-color: #f8f8f8;
-          padding: 20px;
+          background-color: #f4f4f4;
+          padding: 15px 0;
+          border-bottom: 1px solid #ddd;
         }
         .page-navigation ul {
           list-style: none;
           padding: 0;
           display: flex;
-          gap: 20px;
           justify-content: center;
+          gap: 20px;
+          margin: 0;
         }
         .page-navigation a {
           text-decoration: none;
@@ -37,6 +39,7 @@ export default function NavBar({ pages }: NavBarProps) {
         }
         .page-navigation a:hover {
           color: #0070f3;
+          text-decoration: underline;
         }
       `}</style>
     </nav>
