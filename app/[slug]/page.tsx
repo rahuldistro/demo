@@ -45,13 +45,6 @@ export default async function Page({ params }: { params: { slug: string } }) {
     return (
       <ElementorWrapper>
         <div className="error">Page not found</div>
-        <style jsx>{`
-          .error {
-            text-align: center;
-            padding: 20px;
-            color: red;
-          }
-        `}</style>
       </ElementorWrapper>
     );
   }
@@ -85,6 +78,17 @@ export default async function Page({ params }: { params: { slug: string } }) {
               img: ['src', 'alt'],
               button: ['type'],
             },
+            transformTags: {
+              img: (tagName, attribs) => ({
+                tagName,
+                attribs: {
+                  ...attribs,
+                  src: attribs.src.startsWith('http')
+                    ? attribs.src.replace('https://mydemopage.wpenginepowered.com', '')
+                    : attribs.src,
+                },
+              }),
+            },
           }),
         }}
       />
@@ -111,7 +115,7 @@ export async function generateStaticParams() {
     });
 
     if (!res.ok) {
-      throw new Error('Failed to fetch pages for static params');
+      throw new Error('Failed to fetch pages');
     }
 
     const json = await res.json();

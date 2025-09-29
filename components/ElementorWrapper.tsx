@@ -14,31 +14,7 @@ export default function ElementorWrapper({ children }: ElementorWrapperProps) {
           href="https://mydemopage.wpenginepowered.com/wp-content/plugins/elementor/assets/css/frontend.min.css"
         />
       </Head>
-      <div className="elementor-wrapper">
-        {children}
-        <style jsx global>{`
-          .elementor-wrapper {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-          }
-          .elementor {
-            line-height: 1.6;
-            color: #333;
-          }
-          .elementor img {
-            max-width: 100%;
-            height: auto;
-          }
-          .elementor a {
-            color: #0070f3;
-            text-decoration: none;
-          }
-          .elementor a:hover {
-            text-decoration: underline;
-          }
-        `}</style>
-      </div>
+      <div className="elementor-wrapper">{children}</div>
     </>
   );
 }

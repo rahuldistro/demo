@@ -27,7 +27,7 @@ export default async function Home() {
             }
           `,
         }),
-        cache: 'force-cache', // Static generation
+        cache: 'force-cache',
         next: { revalidate: 3600 }, // Revalidate every hour
       }
     );
@@ -56,7 +56,7 @@ export default async function Home() {
             {pages.map((page) => (
               <section key={page.id} className="page-section">
                 <h2>
-                  <Link href={`/${page.slug}`}>{page.title}</Link>
+                  <a href={`/${page.slug}`}>{page.title}</a>
                 </h2>
                 <div
                   className="elementor"
@@ -84,6 +84,17 @@ export default async function Home() {
                         img: ['src', 'alt'],
                         button: ['type'],
                       },
+                      transformTags: {
+                        img: (tagName, attribs) => ({
+                          tagName,
+                          attribs: {
+                            ...attribs,
+                            src: attribs.src.startsWith('http')
+                              ? attribs.src.replace('https://mydemopage.wpenginepowered.com', '')
+                              : attribs.src,
+                          },
+                        }),
+                      },
                     }),
                   }}
                 />
@@ -92,38 +103,6 @@ export default async function Home() {
           </div>
         )}
       </ElementorWrapper>
-      <style jsx>{`
-        .page-list {
-          display: flex;
-          flex-direction: column;
-          gap: 40px;
-        }
-        .page-section {
-          border-bottom: 1px solid #eee;
-          padding-bottom: 20px;
-        }
-        .page-section h2 {
-          font-size: 24px;
-          margin-bottom: 10px;
-        }
-        .page-section h2 a {
-          color: #333;
-          text-decoration: none;
-        }
-        .page-section h2 a:hover {
-          color: #0070f3;
-        }
-        .error {
-          color: red;
-          text-align: center;
-          padding: 20px;
-        }
-        .loading {
-          text-align: center;
-          padding: 20px;
-          font-size: 18px;
-        }
-      `}</style>
     </div>
   );
 }
