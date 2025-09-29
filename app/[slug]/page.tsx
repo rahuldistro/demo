@@ -82,7 +82,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
               button: ['type'],
             },
             transformTags: {
-              img: (tagName, attribs) => ({
+              img: (tagName: string, attribs: Record<string, string>) => ({
                 tagName,
                 attribs: {
                   ...attribs,

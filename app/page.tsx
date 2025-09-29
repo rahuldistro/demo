@@ -97,7 +97,7 @@ export default async function Home() {
                       button: ['type'],
                     },
                     transformTags: {
-                      img: (tagName, attribs) => ({
+                      img: (tagName: string, attribs: Record<string, string>) => ({
                         tagName,
                         attribs: {
                           ...attribs,
