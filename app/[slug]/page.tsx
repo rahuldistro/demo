@@ -4,7 +4,6 @@ import sanitizeHtml from 'sanitize-html';
 
 export default async function Page({ params }: { params: { slug: string } }) {
   let page: WordPressPage | null = null;
-  let error: string | null = null;
 
   try {
     const res = await fetch(
@@ -38,7 +37,11 @@ export default async function Page({ params }: { params: { slug: string } }) {
     page = json.data?.pageBy || null;
   } catch (err) {
     console.error('Error fetching page:', err);
-    error = 'Failed to load page. Please try again later.';
+    return (
+      <ElementorWrapper>
+        <div className="error">Failed to load page. Please try again later.</div>
+      </ElementorWrapper>
+    );
   }
 
   if (!page) {

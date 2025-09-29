@@ -93,3 +93,9 @@ body {
   padding: 20px;
   font-size: 18px;
 }
+
+/* Elementor frontend CSS (copy styles from your WordPress site if needed) */
+.elementor-section,
+.elementor-widget {
+  box-sizing: border-box;
+}
