@@ -91,7 +91,7 @@ export default async function Home() {
           <div className="loading">Loading home page...</div>
         ) : (
           <section className="page-section">
-            <h1>{homePage.title}</h1>
+        
             <div
               className="elementor"
               dangerouslySetInnerHTML={{
