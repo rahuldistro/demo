@@ -1,18 +1,17 @@
+// app/page.tsx (Next.js 13+)
 import Head from "next/head";
 import NavBar from "@/components/NavBar";
 import ElementorWrapper from "@/components/ElementorWrapper";
 import { WordPressPage } from "@/types";
-import sanitizeHtml from "sanitize-html";
 
 export default async function Home() {
-  let homePage: WordPressPage | null = null;
+  let homePageHTML = "";
   let pages: WordPressPage[] = [];
-  let elementorAssets: { css: string[]; js: string[] } = { css: [], js: [] };
   let error: string | null = null;
 
   try {
-    // Step 1 — Get Home page + all pages
-    const res = await fetch(
+    // STEP 1 — Fetch Home Page GraphQL Data
+    const graphqlRes = await fetch(
       "https://mydemopage.wpenginepowered.com/graphql",
       {
         method: "POST",
@@ -22,13 +21,13 @@ export default async function Home() {
             query GetHomePage {
               pageBy(uri: "home") {
                 id
+                databaseId
                 slug
-                title
-                content
               }
               pages {
                 nodes {
                   id
+                  databaseId
                   slug
                   title
                 }
@@ -41,67 +40,45 @@ export default async function Home() {
       }
     );
 
-    if (!res.ok) throw new Error("Failed to fetch pages");
+    if (!graphqlRes.ok) throw new Error("Failed to fetch WordPress pages");
 
-    const json = await res.json();
-    homePage = json.data?.pageBy || null;
+    const json = await graphqlRes.json();
+    const homePage = json.data?.pageBy;
     pages = json.data?.pages?.nodes || [];
 
     if (homePage) {
-      // Step 2 — Get Elementor page-specific CSS + JS
-      const assetsRes = await fetch(
-        `https://mydemopage.wpenginepowered.com/wp-json/elementor/v1/assets/${homePage.id}`
-      );
-
-      if (assetsRes.ok) {
-        elementorAssets = await assetsRes.json();
-      }
+      // STEP 2 — Fetch Rendered HTML of the Home Page
+      const pageUrl = `https://mydemopage.wpenginepowered.com/${homePage.slug}`;
+      const htmlRes = await fetch(pageUrl);
+      homePageHTML = await htmlRes.text();
     }
   } catch (err) {
-    console.error("Error fetching pages:", err);
+    console.error("Error fetching Elementor page:", err);
     error = "Failed to load home page. Please try again later.";
   }
 
   return (
     <div>
-      <NavBar pages={pages} />
+      {/*<NavBar pages={pages} />*/}
 
       <Head>
-        {/* Elementor core CSS */}
-        <link
-          rel="stylesheet"
-          href="https://mydemopage.wpenginepowered.com/wp-content/plugins/elementor/assets/css/frontend.min.css"
-        />
-
-        {/* Elementor page-specific CSS */}
-        {elementorAssets.css?.map((href, i) => (
-          <link key={i} rel="stylesheet" href={href} />
-        ))}
-
-        {/* Elementor page-specific JS */}
-        {elementorAssets.js?.map((src, i) => (
-          <script key={i} src={src} defer></script>
-        ))}
+        {/* This will load all Elementor styles + scripts automatically */}
       </Head>
 
       <ElementorWrapper>
         {error ? (
           <div className="error">{error}</div>
-        ) : !homePage ? (
+        ) : !homePageHTML ? (
           <div className="loading">Loading home page...</div>
         ) : (
           <section className="page-section">
-        
-            <div
-              className="elementor"
-              dangerouslySetInnerHTML={{
-                __html: sanitizeHtml(homePage.content || "No content available", {
-                  allowedTags: false,
-                  allowedAttributes: false,
-                }),
-              }}
-            />
-          </section>
+  {/* Inject full Elementor HTML */}
+  <div
+    className="elementor"
+    dangerouslySetInnerHTML={{ __html: homePageHTML }}
+  />
+</section>
+
         )}
       </ElementorWrapper>
     </div>

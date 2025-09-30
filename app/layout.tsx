@@ -19,6 +19,9 @@ export default function RootLayout({
     <html lang="en">
       <head>
         {/* WordPress Stylesheets */}
+        <link rel="stylesheet" href="https://mydemopage.wpenginepowered.com/wp-content/uploads/elementor/css/global.css" />
+<link rel="stylesheet" href="https://mydemopage.wpenginepowered.com/wp-content/uploads/elementor/css/post-123.css" />
+
         <link
           rel="stylesheet"
           href="https://mydemopage.wpenginepowered.com/wp-content/plugins/woocommerce/assets/css/woocommerce-layout.css?ver=10.2.1"
@@ -52,9 +55,9 @@ export default function RootLayout({
         {children}
 
         {/* WordPress Scripts */}
-        <Script src="https://mydemopage.wpenginepowered.com/wp-includes/js/jquery/jquery.min.js" strategy="beforeInteractive" />
+      {/*  <Script src="https://mydemopage.wpenginepowered.com/wp-includes/js/jquery/jquery.min.js" strategy="beforeInteractive" />
         <Script src="https://mydemopage.wpenginepowered.com/wp-includes/js/jquery/jquery-migrate.min.js" strategy="beforeInteractive" />
-        <Script src="https://mydemopage.wpenginepowered.com/wp-content/plugins/woocommerce/assets/js/jquery-blockui/jquery.blockUI.min.js" strategy="beforeInteractive" />
+        <Script src="https://mydemopage.wpenginepowered.com/wp-content/plugins/woocommerce/assets/js/jquery-blockui/jquery.blockUI.min.js" strategy="beforeInteractive" />*/}
       </body>
     </html>
   );
