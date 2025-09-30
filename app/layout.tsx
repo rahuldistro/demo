@@ -68,7 +68,7 @@ export default function RootLayout({
 
 
     </head>
-      <body >
+      <body className={inter.className}>
         {children}
         {/* WordPress Scripts */}
         <Script src="https://mydemopage.wpenginepowered.com/wp-includes/js/jquery/jquery.min.js" strategy="beforeInteractive" />

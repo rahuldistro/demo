@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import {Link} from "next/link"
 
 interface ElementorWrapperProps {
   children: ReactNode;
@@ -13,7 +14,7 @@ export default function ElementorWrapper({ children }: ElementorWrapperProps) {
       data-elementor-post-type="page"
     >
       <main className="elementor-section-wrap">{children}</main>
-      <footer className="elementor elementor-location-footer">
+   {/*   <footer className="elementor elementor-location-footer">
         <div className="elementor-container e-con e-parent e-lazyloaded">
           <h2 className="elementor-heading-title">Social Media Posts</h2>
           <p>This is a gallery to showcase images from your recent social posts</p>
@@ -56,16 +57,16 @@ export default function ElementorWrapper({ children }: ElementorWrapperProps) {
             <h6 className="elementor-heading-title">Get In Touch</h6>
             <ul className="elementor-icon-list-items">
               <li className="elementor-icon-list-item">
-                <a href="mailto:contact@mysite.com">Email: contact@mysite.com</a>
+                <Link href="mailto:contact@mysite.com">Email: contact@mysite.com</Link>
               </li>
               <li className="elementor-icon-list-item">
-                <a href="tel:123-456-7890">Phone: 123-456-7890</a>
+                <Link href="tel:123-456-7890">Phone: 123-456-7890</Link>
               </li>
             </ul>
           </div>
           <p className="elementor-heading-title elementor-size-default">© All Rights Reserved.</p>
         </div>
-      </footer>
+      </footer>*/}
     </div>
   );
 }
