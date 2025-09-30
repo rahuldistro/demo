@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import {Link} from "next/link"
+
 
 interface ElementorWrapperProps {
   children: ReactNode;
@@ -12,6 +12,7 @@ export default function ElementorWrapper({ children }: ElementorWrapperProps) {
       data-elementor-id="62"
       className="elementor elementor-62"
       data-elementor-post-type="page"
+      
     >
       <main className="elementor-section-wrap">{children}</main>
    {/*   <footer className="elementor elementor-location-footer">

@@ -1,5 +1,8 @@
 // app/[slug]/page.tsx
+"use client";
+
 import sanitizeHtml from "sanitize-html";
+import Head from "next/head";
 
 export const revalidate = 3600;
 
@@ -10,7 +13,11 @@ interface WordPressPage {
   content: string;
 }
 
-export default async function Page({ params }: { params: { slug: string } }) {
+export default async function Page({
+  params,
+}: {
+  params: { slug: string };
+}) {
   let page: WordPressPage | null = null;
   let error: string | null = null;
 
@@ -48,53 +55,93 @@ export default async function Page({ params }: { params: { slug: string } }) {
 
   return (
     <>
+      <Head>
+        {/* Elementor CSS files */}
+        <link
+          rel="stylesheet"
+          href="https://mydemopage.wpenginepowered.com/wp-content/plugins/elementor/assets/css/frontend.min.css"
+        />
+        <link
+          rel="stylesheet"
+          href="https://mydemopage.wpenginepowered.com/wp-content/plugins/elementor/assets/css/frontend-responsive.min.css"
+        />
+        {/* Elementor JS files */}
+        <script
+          src="https://mydemopage.wpenginepowered.com/wp-content/plugins/elementor/assets/js/frontend.min.js"
+          defer
+        ></script>
+      </Head>
+
       {error ? (
         <div className="error">{error}</div>
       ) : !page ? (
         <div className="error">Page not found.</div>
       ) : (
         <div className="elementor-wrapper">
-          <h1 className="elementor-heading-title elementor-size-default">{page.title}</h1>
+          <h1 className="elementor-heading-title elementor-size-default">
+            {page.title}
+          </h1>
           <div
             className="elementor"
             dangerouslySetInnerHTML={{
               __html: sanitizeHtml(page.content || "No content available", {
                 allowedTags: [
-                  "div","p","h1","h2","h3","h4","h5","h6",
-                  "a","img","ul","li","span","button","section",
-                  "article","aside","header","footer","nav","figure",
-                  "figcaption","main"
+                  "div",
+                  "p",
+                  "h1",
+                  "h2",
+                  "h3",
+                  "h4",
+                  "h5",
+                  "h6",
+                  "a",
+                  "img",
+                  "ul",
+                  "li",
+                  "span",
+                  "button",
+                  "section",
+                  "article",
+                  "aside",
+                  "header",
+                  "footer",
+                  "nav",
+                  "figure",
+                  "figcaption",
+                  "main",
                 ],
                 allowedAttributes: {
-                  "*": ["class","style","id","data-*"],
-                  a: ["href","target","rel"],
-                  img: ["src","alt","width","height","srcset","sizes","loading"],
-                  button: ["type","onclick"]
+                  "*": ["class", "style", "id", "data-*"],
+                  a: ["href", "target", "rel"],
+                  img: ["src", "alt", "width", "height", "srcset", "sizes", "loading"],
+                  button: ["type", "onclick"],
                 },
                 allowedClasses: {
                   "*": [
-                    /^elementor.*/, /^wp-.*/, /^align-.*/, /^has-.*/,
-                    /^is-.*/, /^menu-.*/, /^fa-.*/, /^button-.*/,
-                    /^container.*/, /^row.*/, /^col-.*/
-                  ]
+                    /^elementor.*/,
+                    /^wp-.*/,
+                    /^align-.*/,
+                    /^has-.*/,
+                    /^is-.*/,
+                    /^menu-.*/,
+                    /^fa-.*/,
+                    /^button-.*/,
+                    /^container.*/,
+                    /^row.*/,
+                    /^col-.*/,
+                  ],
                 },
                 transformTags: {
-                  img: (tagName, attribs) => ({
+                  img: (tagName: string, attribs: Record<string, string>) => ({
                     tagName,
                     attribs: {
                       ...attribs,
                       src: attribs.src?.startsWith("http")
                         ? attribs.src
                         : `https://mydemopage.wpenginepowered.com${attribs.src}`,
-                      srcset: attribs.srcset
-                        ? attribs.srcset.replace(
-                            /https:\/\/mydemopage\.wpenginepowered\.com/g,
-                            ""
-                          )
-                        : undefined,
                     },
                   }),
-                  a: (tagName, attribs) => ({
+                  a: (tagName: string, attribs: Record<string, string>) => ({
                     tagName,
                     attribs: {
                       ...attribs,
@@ -112,3 +159,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
     </>
   );
 }
+
+
+
+
