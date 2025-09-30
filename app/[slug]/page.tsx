@@ -1,10 +1,8 @@
 // app/[slug]/page.tsx
-"use client";
-
 import sanitizeHtml from "sanitize-html";
 import Head from "next/head";
 
-export const revalidate = 3600;
+export const revalidate = 3600; // Works only in server components
 
 interface WordPressPage {
   id: string;
@@ -56,7 +54,6 @@ export default async function Page({
   return (
     <>
       <Head>
-        {/* Elementor CSS files */}
         <link
           rel="stylesheet"
           href="https://mydemopage.wpenginepowered.com/wp-content/plugins/elementor/assets/css/frontend.min.css"
@@ -65,7 +62,6 @@ export default async function Page({
           rel="stylesheet"
           href="https://mydemopage.wpenginepowered.com/wp-content/plugins/elementor/assets/css/frontend-responsive.min.css"
         />
-        {/* Elementor JS files */}
         <script
           src="https://mydemopage.wpenginepowered.com/wp-content/plugins/elementor/assets/js/frontend.min.js"
           defer
@@ -86,50 +82,16 @@ export default async function Page({
             dangerouslySetInnerHTML={{
               __html: sanitizeHtml(page.content || "No content available", {
                 allowedTags: [
-                  "div",
-                  "p",
-                  "h1",
-                  "h2",
-                  "h3",
-                  "h4",
-                  "h5",
-                  "h6",
-                  "a",
-                  "img",
-                  "ul",
-                  "li",
-                  "span",
-                  "button",
-                  "section",
-                  "article",
-                  "aside",
-                  "header",
-                  "footer",
-                  "nav",
-                  "figure",
-                  "figcaption",
-                  "main",
+                  "div","p","h1","h2","h3","h4","h5","h6","a","img","ul","li","span","button","section","article","aside","header","footer","nav","figure","figcaption","main"
                 ],
                 allowedAttributes: {
-                  "*": ["class", "style", "id", "data-*"],
-                  a: ["href", "target", "rel"],
-                  img: ["src", "alt", "width", "height", "srcset", "sizes", "loading"],
-                  button: ["type", "onclick"],
+                  "*": ["class","style","id","data-*"],
+                  a: ["href","target","rel"],
+                  img: ["src","alt","width","height","srcset","sizes","loading"],
+                  button: ["type","onclick"]
                 },
                 allowedClasses: {
-                  "*": [
-                    /^elementor.*/,
-                    /^wp-.*/,
-                    /^align-.*/,
-                    /^has-.*/,
-                    /^is-.*/,
-                    /^menu-.*/,
-                    /^fa-.*/,
-                    /^button-.*/,
-                    /^container.*/,
-                    /^row.*/,
-                    /^col-.*/,
-                  ],
+                  "*": [/^elementor.*/, /^wp-.*/, /^align-.*/, /^has-.*/, /^is-.*/, /^menu-.*/, /^fa-.*/, /^button-.*/, /^container.*/, /^row.*/, /^col-.*/]
                 },
                 transformTags: {
                   img: (tagName: string, attribs: Record<string, string>) => ({
@@ -159,7 +121,3 @@ export default async function Page({
     </>
   );
 }
-
-
-
-
