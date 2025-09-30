@@ -17,16 +17,41 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-    <head>
-      <link rel="alternate" type="application/rss+xml" title="Bryan Garabrandt Site » Feed" href="https://mydemopage.wpenginepowered.com/feed/"/>
-      <link rel="alternate" type="application/rss+xml" title="Bryan Garabrandt Site » Comments Feed" href="https://mydemopage.wpenginepowered.com/comments/feed/"/>
-      <link rel="stylesheet" id="woocommerce-layout-css" href="https://mydemopage.wpenginepowered.com/wp-content/plugins/woocommerce/assets/css/woocommerce-layout.css?ver=10.2.1" media="all"/>
-      <link rel="stylesheet" id="woocommerce-smallscreen-css" href="https://mydemopage.wpenginepowered.com/wp-content/plugins/woocommerce/assets/css/woocommerce-smallscreen.css?ver=10.2.1" media="only screen and (max-width: 768px)"/>
-
-    </head>
+      <head>
+        {/* WordPress Stylesheets */}
+        <link
+          rel="stylesheet"
+          href="https://mydemopage.wpenginepowered.com/wp-content/plugins/woocommerce/assets/css/woocommerce-layout.css?ver=10.2.1"
+        />
+        <link
+          rel="stylesheet"
+          href="https://mydemopage.wpenginepowered.com/wp-content/plugins/woocommerce/assets/css/woocommerce-smallscreen.css?ver=10.2.1"
+        />
+        <link
+          rel="stylesheet"
+          href="https://mydemopage.wpenginepowered.com/wp-content/plugins/woocommerce/assets/css/woocommerce.css?ver=10.2.1"
+        />
+        <link
+          rel="stylesheet"
+          href="https://mydemopage.wpenginepowered.com/wp-content/themes/hello-elementor/assets/css/reset.css?ver=3.4.4"
+        />
+        <link
+          rel="stylesheet"
+          href="https://mydemopage.wpenginepowered.com/wp-content/themes/hello-elementor/assets/css/theme.css?ver=3.4.4"
+        />
+        <link
+          rel="stylesheet"
+          href="https://mydemopage.wpenginepowered.com/wp-content/themes/hello-elementor/assets/css/header-footer.css?ver=3.4.4"
+        />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&display=swap"
+        />
+      </head>
       <body className={inter.className}>
         {children}
-       
+
+        {/* WordPress Scripts */}
         <Script src="https://mydemopage.wpenginepowered.com/wp-includes/js/jquery/jquery.min.js" strategy="beforeInteractive" />
         <Script src="https://mydemopage.wpenginepowered.com/wp-includes/js/jquery/jquery-migrate.min.js" strategy="beforeInteractive" />
         <Script src="https://mydemopage.wpenginepowered.com/wp-content/plugins/woocommerce/assets/js/jquery-blockui/jquery.blockUI.min.js" strategy="beforeInteractive" />
@@ -34,3 +59,4 @@ export default function RootLayout({
     </html>
   );
 }
+
