@@ -1,7 +1,8 @@
-// app/page.tsx (Next.js 13+)
+// app/page.tsx (Server Component)
 import Head from "next/head";
 import NavBar from "@/components/NavBar";
 import ElementorWrapper from "@/components/ElementorWrapper";
+import WordpressContent from "@/components/WordpressContent";
 import { WordPressPage } from "@/types";
 
 export default async function Home() {
@@ -10,7 +11,6 @@ export default async function Home() {
   let error: string | null = null;
 
   try {
-    // STEP 1 — Fetch Home Page GraphQL Data
     const graphqlRes = await fetch(
       "https://mydemopage.wpenginepowered.com/graphql",
       {
@@ -47,9 +47,8 @@ export default async function Home() {
     pages = json.data?.pages?.nodes || [];
 
     if (homePage) {
-      // STEP 2 — Fetch Rendered HTML of the Home Page
       const pageUrl = `https://mydemopage.wpenginepowered.com/${homePage.slug}`;
-      const htmlRes = await fetch(pageUrl);
+      const htmlRes = await fetch(pageUrl); // Server-side fetch → CORS nahi hoga
       homePageHTML = await htmlRes.text();
     }
   } catch (err) {
@@ -59,30 +58,16 @@ export default async function Home() {
 
   return (
     <div>
-      {/*<NavBar pages={pages} />*/}
-
-      <Head>
-        {/* This will load all Elementor styles + scripts automatically */}
-      </Head>
-
+      <Head></Head>
       <ElementorWrapper>
         {error ? (
           <div className="error">{error}</div>
         ) : !homePageHTML ? (
           <div className="loading">Loading home page...</div>
         ) : (
-          <section className="page-section">
-  {/* Inject full Elementor HTML */}
-  <div
-    className="elementor"
-    dangerouslySetInnerHTML={{ __html: homePageHTML }}
-  />
-</section>
-
+              <WordpressContent html={homePageHTML}/>
         )}
       </ElementorWrapper>
     </div>
   );
 }
-
-
