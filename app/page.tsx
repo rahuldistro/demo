@@ -57,8 +57,7 @@ export default async function Home() {
   }
 
   return (
-    <div>
-      <Head></Head>
+    <div> 
       <ElementorWrapper>
         {error ? (
           <div className="error">{error}</div>
