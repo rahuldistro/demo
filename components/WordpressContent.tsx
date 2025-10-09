@@ -25,34 +25,40 @@ export default function WordPressContent({ html }: { html: string }) {
     const container = containerRef.current;
     if (!container) return;
 
+    // ✅ all WordPress domains you want to strip
+    const wordpressDomains = [
+      "https://hpw3htm4fsd7dfi6h6lrevu3r.js.wpenginepowered.com",
+      "https://mydemopage.wpenginepowered.com",
+    ];
+
     const anchors = container.querySelectorAll("a[href]");
     anchors.forEach((a) => {
       const href = a.getAttribute("href");
       if (!href) return;
 
-      const wordpressDomain = "https://hpw3htm4fsd7dfi6h6lrevu3r.js.wpenginepowered.com";
+      let internalPath = href;
 
-      // Case 1: External links (leave them as is)
-      if (
-        href.startsWith("http") &&
-        !href.startsWith(wordpressDomain)
-      ) {
+      // Check if link matches any WP domain
+      const matchedDomain = wordpressDomains.find((domain) =>
+        href.startsWith(domain)
+      );
+
+      // If the link starts with your WP domain, strip it
+      if (matchedDomain) {
+        internalPath = href.replace(matchedDomain, "");
+      }
+
+      // If it’s still a full external link (not internal WP link), skip
+      if (internalPath.startsWith("http") || internalPath.startsWith("mailto:")) {
         return;
       }
 
-      // Case 2: WordPress links — convert to relative Next.js routes
-      let internalPath = href;
-
-      if (href.startsWith(wordpressDomain)) {
-        internalPath = href.replace(wordpressDomain, "");
-      }
-
-      // Case 3: Ensure path starts with '/'
+      // Ensure the internal path starts with "/"
       if (!internalPath.startsWith("/")) {
         internalPath = "/" + internalPath;
       }
 
-      // Add click handler
+      // Attach Next.js routing handler
       a.addEventListener("click", (e) => {
         e.preventDefault();
         router.push(internalPath);
