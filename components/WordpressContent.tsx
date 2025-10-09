@@ -25,48 +25,49 @@ export default function WordPressContent({ html }: { html: string }) {
     const container = containerRef.current;
     if (!container) return;
 
-    const wordpressDomain = "https://hpw3htm4fsd7dfi6h6lrevu3r.js.wpenginepowered.com";
-    const oldDomain = "https://mydemopage.wpenginepowered.com";
+    // Domains to treat as internal (headless + old WP)
+    const internalDomains = [
+      "https://hpw3htm4fsd7dfi6h6lrevu3r.js.wpenginepowered.com",
+      "https://mydemopage.wpenginepowered.com",
+    ];
 
-    const anchors = container.querySelectorAll("a[href]");
+    const anchors = container.querySelectorAll<HTMLAnchorElement>("a[href]");
+
     anchors.forEach((a) => {
       const href = a.getAttribute("href");
       if (!href) return;
 
-      // Keep external links working normally
-      if (
-        href.startsWith("http") &&
-        !href.startsWith(wordpressDomain) &&
-        !href.startsWith(oldDomain)
-      ) {
-        return;
-      }
+      const isInternal = internalDomains.some((domain) =>
+        href.startsWith(domain)
+      );
 
-      // Convert old WP domain to new one for internal navigation (only for click)
-      let internalPath = href
-        .replace(wordpressDomain, "")
-        .replace(oldDomain, "");
+      // Skip true external links (leave them alone)
+      if (!isInternal && href.startsWith("http")) return;
 
+      // Compute internal route path
+      let internalPath = href;
+      internalDomains.forEach((domain) => {
+        internalPath = internalPath.replace(domain, "");
+      });
+
+      // Normalize path
       if (!internalPath.startsWith("/")) internalPath = "/" + internalPath;
 
-      // Intercept click to use Next.js router
-      a.addEventListener("click", (e) => {
+      // Remove old event listeners to avoid duplicate
+      const newLink = a.cloneNode(true) as HTMLAnchorElement;
+      newLink.addEventListener("click", (e) => {
         e.preventDefault();
+        e.stopPropagation(); // 🔥 Stops Elementor or browser navigation
         router.push(internalPath);
       });
-    });
 
-    // Cleanup on re-render
-    return () => {
-      anchors.forEach((a) => {
-        a.replaceWith(a.cloneNode(true));
-      });
-    };
+      // Replace original link with new one (fully preserves HTML/CSS)
+      a.replaceWith(newLink);
+    });
   }, [html, router]);
 
   return (
     <section className="page-section">
-      {/* ✅ Keep the original HTML untouched (CSS & scripts remain) */}
       <div
         ref={containerRef}
         className="elementor"
