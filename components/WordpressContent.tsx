@@ -83,4 +83,3 @@ export default function WordPressContent({ html }: { html: string }) {
     </section>
   );
 }
-
